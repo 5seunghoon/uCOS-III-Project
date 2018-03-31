@@ -50,6 +50,9 @@
 */
 
 static  OS_TCB          AppTaskStartTCB; 
+static  OS_TCB          AppTask1TCB; 
+static  OS_TCB          AppTask2TCB; 
+static  OS_TCB          AppTask3TCB; 
 
 
 /*
@@ -60,6 +63,9 @@ static  OS_TCB          AppTaskStartTCB;
 
 static  CPU_STK         AppTaskStartStk[APP_TASK_START_STK_SIZE];
 
+static  CPU_STK         AppTask1Stk[APP_TASK_STK_SIZE];
+static  CPU_STK         AppTask2Stk[APP_TASK_STK_SIZE];
+static  CPU_STK         AppTask3Stk[APP_TASK_STK_SIZE];
 
 
 /*
@@ -71,6 +77,9 @@ static  CPU_STK         AppTaskStartStk[APP_TASK_START_STK_SIZE];
 static  void  AppTaskCreate     (void);
 static  void  AppTaskStart      (void *p_arg);
 
+static  void  AppTask1 (void *p_arg);
+static  void  AppTask2 (void *p_arg);
+static  void  AppTask3 (void *p_arg);
 
 
 
@@ -86,6 +95,11 @@ static  void  AppTaskStart      (void *p_arg);
 * Returns     : none
 *********************************************************************************************************
 */
+
+static int threshold = 0;
+static int count1 = 0;
+static int count2 = 0;
+static int count3 = 0;
 
 int  main (void)
 {
@@ -184,4 +198,93 @@ static  void  AppTaskCreate (void)
 {
     OS_ERR  err;
     
+
+    
+    OSTaskCreate((OS_TCB     *)&AppTask1TCB, 
+                 (CPU_CHAR   *)"App 1 Start",
+                 (OS_TASK_PTR )AppTask1, 
+                 (void       *)0,
+                 (OS_PRIO     )APP_TASK_TEMP_SENSOR_PRIO,
+                 (CPU_STK    *)&AppTask1Stk[0],
+                 (CPU_STK_SIZE)APP_TASK_STK_SIZE / 10,
+                 (CPU_STK_SIZE)APP_TASK_STK_SIZE,
+                 (OS_MSG_QTY  )0,
+                 (OS_TICK     )3,
+                 (void       *)0,
+                 (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
+                 (OS_ERR     *)&err);
+    
+    OSTaskCreate((OS_TCB     *)&AppTask2TCB, 
+                 (CPU_CHAR   *)"App 2 Start",
+                 (OS_TASK_PTR )AppTask2, 
+                 (void       *)0,
+                 (OS_PRIO     )APP_TASK_TEMP_SENSOR_PRIO,
+                 (CPU_STK    *)&AppTask2Stk[0],
+                 (CPU_STK_SIZE)APP_TASK_STK_SIZE / 10,
+                 (CPU_STK_SIZE)APP_TASK_STK_SIZE,
+                 (OS_MSG_QTY  )0,
+                 (OS_TICK     )4,
+                 (void       *)0,
+                 (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
+                 (OS_ERR     *)&err);
+    
+    OSTaskCreate((OS_TCB     *)&AppTask3TCB, 
+                 (CPU_CHAR   *)"App 3 Start",
+                 (OS_TASK_PTR )AppTask3, 
+                 (void       *)0,
+                 (OS_PRIO     )APP_TASK_TEMP_SENSOR_PRIO,
+                 (CPU_STK    *)&AppTask3Stk[0],
+                 (CPU_STK_SIZE)APP_TASK_STK_SIZE / 10,
+                 (CPU_STK_SIZE)APP_TASK_STK_SIZE,
+                 (OS_MSG_QTY  )0,
+                 (OS_TICK     )5,
+                 (void       *)0,
+                 (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
+                 (OS_ERR     *)&err);
+}
+
+static  void  AppTask1 (void *p_arg)
+{
+    OS_ERR      err;
+    while (DEF_TRUE) {                                                    /*  Sense the temperature every 100 ms     */
+      count1 += 1;
+      if(count1 >= threshold){
+        BSP_LED_Toggle(1);
+        count1 = 0;
+      }
+//        OSTimeDlyHMSM(0, 0, 0, 100,   
+//                      OS_OPT_TIME_HMSM_STRICT, 
+//                      &err);
+    }
+}
+        
+
+static  void  AppTask2 (void *p_arg)
+{
+    OS_ERR      err;
+    while (DEF_TRUE) {                                                    /*  Sense the temperature every 100 ms     */
+      count2 += 1;
+      if(count2 >= threshold){
+        BSP_LED_Toggle(2);
+        count2 = 0;
+      }
+//        OSTimeDlyHMSM(0, 0, 0, 100,
+//                      OS_OPT_TIME_HMSM_STRICT, 
+//                      &err);
+    }
+}
+
+static  void  AppTask3 (void *p_arg)
+{
+    OS_ERR      err;
+    while (DEF_TRUE) {                                                    /*  Sense the temperature every 100 ms     */
+      count3 += 1;
+      if(count3 >= threshold){
+        BSP_LED_Toggle(3);
+        count3 = 0;
+      }
+//        OSTimeDlyHMSM(0, 0, 0, 100,
+//                      OS_OPT_TIME_HMSM_STRICT, 
+//                      &err);
+    }
 }
