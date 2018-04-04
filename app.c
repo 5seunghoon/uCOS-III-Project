@@ -223,10 +223,7 @@ static  void  USART_CNF(){
 
 static  void  AppTaskCreate (void)
 {
-    OS_ERR  err;
-    
-
-    
+    OS_ERR  err;   
     OSTaskCreate((OS_TCB     *)&AppTask1TCB, 
                  (CPU_CHAR   *)"App 1 Start",
                  (OS_TASK_PTR )AppTask1, 
@@ -280,13 +277,8 @@ static  void  AppTask1 (void *p_arg)
         USART_SendData(USART1, (u16)'*');
         count1 = 0;
       }
-//        OSTimeDlyHMSM(0, 0, 0, 100,   
-//                      OS_OPT_TIME_HMSM_STRICT, 
-//                      &err);
     }
 }
-        
-
 static  void  AppTask2 (void *p_arg)
 {
     OS_ERR      err;
@@ -297,12 +289,8 @@ static  void  AppTask2 (void *p_arg)
         USART_SendData(USART1, (u16)'@');
         count2 = 0;
       }
-//        OSTimeDlyHMSM(0, 0, 0, 100,
-//                      OS_OPT_TIME_HMSM_STRICT, 
-//                      &err);
     }
 }
-
 static  void  AppTask3 (void *p_arg)
 {
     OS_ERR      err;
@@ -313,8 +301,5 @@ static  void  AppTask3 (void *p_arg)
         USART_SendData(USART1, (u16)'#');
         count3 = 0;
       }
-//        OSTimeDlyHMSM(0, 0, 0, 100,
-//                      OS_OPT_TIME_HMSM_STRICT, 
-//                      &err);
     }
 }
