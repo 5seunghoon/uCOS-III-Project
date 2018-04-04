@@ -81,6 +81,8 @@ static  void  AppTask1 (void *p_arg);
 static  void  AppTask2 (void *p_arg);
 static  void  AppTask3 (void *p_arg);
 
+static  void  USART_CNF();
+
 
 
 /*
@@ -155,7 +157,6 @@ static  void  AppTaskStart (void *p_arg)
     OS_ERR      err;
     
     
-
    (void)p_arg;
 
     BSP_Init();                                                 /* Initialize BSP functions                                 */
@@ -171,6 +172,7 @@ static  void  AppTaskStart (void *p_arg)
 #endif
 
     CPU_IntDisMeasMaxCurReset();
+    USART_CNF();
     
     AppTaskCreate();                                            /* Create application tasks                                 */
 
@@ -179,6 +181,31 @@ static  void  AppTaskStart (void *p_arg)
                       OS_OPT_TIME_HMSM_STRICT, 
                       &err);
     }
+}
+
+
+static  void  USART_CNF(){
+  GPIO_InitTypeDef GPIO_InitStructure;
+  USART_InitTypeDef USART_InitStructure;
+  
+  RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOA | RCC_APB2Periph_AFIO | RCC_APB2Periph_USART1
+                         , ENABLE);
+  
+  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF_PP;
+  GPIO_InitStructure.GPIO_Pin = GPIO_Pin_9;
+  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+  
+  GPIO_Init(GPIOA, &GPIO_InitStructure);
+  
+  USART_InitStructure.USART_BaudRate                    = 9600;
+  USART_InitStructure.USART_WordLength                  = USART_WordLength_8b;
+  USART_InitStructure.USART_StopBits                    = USART_StopBits_1;
+  USART_InitStructure.USART_Parity                      = USART_Parity_No;
+  USART_InitStructure.USART_Mode                        = USART_Mode_Tx;
+  USART_InitStructure.USART_HardwareFlowControl         = USART_HardwareFlowControl_None;
+  
+  USART_Init(USART1, &USART_InitStructure);
+  USART_Cmd(USART1, ENABLE);
 }
 
 
@@ -209,7 +236,7 @@ static  void  AppTaskCreate (void)
                  (CPU_STK_SIZE)APP_TASK_STK_SIZE / 10,
                  (CPU_STK_SIZE)APP_TASK_STK_SIZE,
                  (OS_MSG_QTY  )0,
-                 (OS_TICK     )3,
+                 (OS_TICK     )1,
                  (void       *)0,
                  (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
                  (OS_ERR     *)&err);
@@ -223,7 +250,7 @@ static  void  AppTaskCreate (void)
                  (CPU_STK_SIZE)APP_TASK_STK_SIZE / 10,
                  (CPU_STK_SIZE)APP_TASK_STK_SIZE,
                  (OS_MSG_QTY  )0,
-                 (OS_TICK     )4,
+                 (OS_TICK     )2,
                  (void       *)0,
                  (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
                  (OS_ERR     *)&err);
@@ -237,7 +264,7 @@ static  void  AppTaskCreate (void)
                  (CPU_STK_SIZE)APP_TASK_STK_SIZE / 10,
                  (CPU_STK_SIZE)APP_TASK_STK_SIZE,
                  (OS_MSG_QTY  )0,
-                 (OS_TICK     )5,
+                 (OS_TICK     )3,
                  (void       *)0,
                  (OS_OPT      )(OS_OPT_TASK_STK_CHK | OS_OPT_TASK_STK_CLR),
                  (OS_ERR     *)&err);
@@ -250,6 +277,7 @@ static  void  AppTask1 (void *p_arg)
       count1 += 1;
       if(count1 >= threshold){
         BSP_LED_Toggle(1);
+        USART_SendData(USART1, (u16)'*');
         count1 = 0;
       }
 //        OSTimeDlyHMSM(0, 0, 0, 100,   
@@ -266,6 +294,7 @@ static  void  AppTask2 (void *p_arg)
       count2 += 1;
       if(count2 >= threshold){
         BSP_LED_Toggle(2);
+        USART_SendData(USART1, (u16)'@');
         count2 = 0;
       }
 //        OSTimeDlyHMSM(0, 0, 0, 100,
@@ -281,6 +310,7 @@ static  void  AppTask3 (void *p_arg)
       count3 += 1;
       if(count3 >= threshold){
         BSP_LED_Toggle(3);
+        USART_SendData(USART1, (u16)'#');
         count3 = 0;
       }
 //        OSTimeDlyHMSM(0, 0, 0, 100,
